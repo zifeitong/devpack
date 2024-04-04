@@ -11,7 +11,7 @@ clang-format
 clang-tidy
 
 # Java
-openjdk-11-jdk
+openjdk-11-jdk-headless
 
 # Go
 golang
@@ -49,8 +49,10 @@ strace
 progress
 hyperfine
 graphviz
+gh
 
 # tippy
 # duckdb
 # dog
-# pprof
+# uv
+# clickhouse
