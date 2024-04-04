@@ -1,0 +1,56 @@
+# C/C++
+build-essential
+cmake
+gdb
+
+# clang
+clang
+clangd
+lldb
+clang-format
+clang-tidy
+
+# Java
+openjdk-11-jdk
+
+# Go
+golang
+
+# Ruby
+ruby-full
+
+# Python
+python3
+python3-venv
+python-is-python3
+
+# Rust
+# rustup
+# cargo-flamegraph
+
+# Tools
+bc
+git
+curl
+wget
+wget2
+zsh
+fish
+jq
+vim
+btop
+fd-find
+ripgrep
+fzf
+linux-tools-generic
+mtr
+time
+strace
+progress
+hyperfine
+graphviz
+
+# tippy
+# duckdb
+# dog
+# pprof
