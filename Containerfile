@@ -1,9 +1,9 @@
-FROM quay.io/toolbx/ubuntu-toolbox:23.10 AS builder
+FROM docker.io/library/ubuntu:24.04 AS builder
 
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    g++ openjdk-11-jdk-headless golang && \
+    g++ openjdk-11-jdk-headless golang curl git && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
@@ -28,15 +28,21 @@ RUN git clone https://github.com/google/pprof.git --depth=1
 WORKDIR /pprof
 RUN go build
 
-FROM quay.io/toolbx/ubuntu-toolbox:23.10
-LABEL name="ubuntu-debpack" version="23.10"
+FROM docker.io/library/ubuntu:24.04
+LABEL name="ubuntu-debpack" version="24.04"
+
+# Remove apt configuration optimized for containers
+RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-languages
+
+# Delete the default 'ubuntu' user
+RUN userdel --remove ubuntu
 
 # Install packages
 COPY extra-packages /
 RUN apt-get update && \
+    yes | /usr/local/sbin/unminimize && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    $(grep -v '^#' extra-packages | xargs) && \
-    rm -rd /var/lib/apt/lists/*
+    ubuntu-minimal ubuntu-standard $(grep -v '^#' extra-packages | xargs)
 RUN rm /extra-packages
 
 COPY --from=builder --chmod=755 bazel buildifier buildozer /pprof/pprof /usr/local/bin/
@@ -57,3 +63,9 @@ RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime && \
 ARG USER
 ARG UID
 RUN useradd --password "" --groups sudo --no-create-home --uid ${UID} ${USER}
+
+# Disable APT ESM hook.
+RUN rm /etc/apt/apt.conf.d/20apt-esm-hook.conf
+
+# Update command-not-found database
+RUN apt-get update
