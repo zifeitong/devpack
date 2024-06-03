@@ -3,7 +3,7 @@ FROM docker.io/library/ubuntu:24.04 AS builder
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    g++ openjdk-11-jdk-headless golang curl git && \
+    g++ openjdk-11-jdk-headless golang curl git libelf-dev libcap-dev && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
@@ -21,6 +21,12 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildo
 RUN git clone https://github.com/google/copybara.git --depth=1
 WORKDIR /copybara
 RUN /bazel build //java/com/google/copybara:copybara_deploy.jar -c opt
+
+# Install perf_data_converter
+WORKDIR /
+RUN git clone https://github.com/google/perf_data_converter.git --depth=1
+WORKDIR /perf_data_converter
+RUN /bazel build src:perf_to_profile -c opt
 
 # Install pprof
 WORKDIR /
@@ -45,7 +51,9 @@ RUN apt-get update && \
     ubuntu-minimal ubuntu-standard $(grep -v '^#' extra-packages | xargs)
 RUN rm /extra-packages
 
-COPY --from=builder --chmod=755 bazel buildifier buildozer /pprof/pprof /usr/local/bin/
+COPY --from=builder --chmod=755 bazel buildifier buildozer /pprof/pprof \
+     /perf_data_converter/bazel-bin/src/perf_to_profile \
+     /usr/local/bin/
 COPY --from=builder \
     /copybara/bazel-bin/java/com/google/copybara/copybara_deploy.jar \
     /opt/copybara/
