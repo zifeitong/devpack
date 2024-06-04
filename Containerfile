@@ -34,7 +34,7 @@ RUN git clone https://github.com/google/pprof.git --depth=1
 WORKDIR /pprof
 RUN go build
 
-FROM docker.io/library/ubuntu:24.04
+FROM docker.io/library/ubuntu:24.04 as ubuntu-devpack
 LABEL name="ubuntu-debpack" version="24.04"
 
 # Remove apt configuration optimized for containers
@@ -62,18 +62,20 @@ COPY --chmod=755 <<"EOF" /usr/local/bin/copybara
 exec java -jar /opt/copybara/copybara_deploy.jar "$@"
 EOF
 
-# Setup locale and timezone
-RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
-RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime && \
-    dpkg-reconfigure --frontend noninteractive tzdata
+# Disable APT ESM hook.
+RUN rm /etc/apt/apt.conf.d/20apt-esm-hook.conf
+
+# Update command-not-found database
+RUN apt-get update
+
+FROM ubuntu-devpack
 
 # Add user
 ARG USER
 ARG UID
 RUN useradd --password "" --groups sudo --no-create-home --uid ${UID} ${USER}
 
-# Disable APT ESM hook.
-RUN rm /etc/apt/apt.conf.d/20apt-esm-hook.conf
-
-# Update command-not-found database
-RUN apt-get update
+# Setup locale and timezone
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
+RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
