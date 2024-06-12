@@ -51,6 +51,8 @@ RUN apt-get update && \
     ubuntu-minimal ubuntu-standard $(grep -v '^#' extra-packages | xargs)
 RUN rm /extra-packages
 
+RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
+
 COPY --from=builder --chmod=755 bazel buildifier buildozer /pprof/pprof \
      /perf_data_converter/bazel-bin/src/perf_to_profile \
      /usr/local/bin/
