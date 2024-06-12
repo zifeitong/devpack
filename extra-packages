@@ -11,6 +11,7 @@ clang-format
 clang-tidy
 libc++-dev
 libc++abi-dev
+llvm
 
 # Java
 openjdk-11-jdk-headless
@@ -43,6 +44,7 @@ zsh
 fish
 jq
 vim
+htop
 btop
 fd-find
 ripgrep
@@ -55,6 +57,8 @@ progress
 hyperfine
 graphviz
 gh
+just
+tmux
 
 # tippy
 # duckdb
