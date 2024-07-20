@@ -12,6 +12,7 @@ clang-tidy
 libc++-dev
 libc++abi-dev
 llvm
+llvm-bolt
 
 # Java
 openjdk-11-jdk-headless
@@ -60,6 +61,7 @@ gh
 just
 tmux
 speedtest-cli
+ncdu
 
 # tippy
 # duckdb
@@ -67,3 +69,4 @@ speedtest-cli
 # uv
 # clickhouse
 # starship
+# zellij
