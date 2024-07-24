@@ -20,7 +20,7 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
-  wget ${CUDNN_URL}${CUDNN_ARCHIVE}.tar.xz
+  wget -nv --show-progress --progress=dot:mega ${CUDNN_URL}${CUDNN_ARCHIVE}.tar.xz
   tar -xf ${CUDNN_ARCHIVE}.tar.xz
   cp -r ${CUDNN_ARCHIVE}/include/* /usr/local/cuda/include
   cp -r ${CUDNN_ARCHIVE}/lib/* /usr/local/cuda/lib64
