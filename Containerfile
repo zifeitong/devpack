@@ -1,4 +1,5 @@
-FROM ghcr.io/zifeitong/ubuntu-devpack:latest
+ARG BASE
+FROM ${BASE}:latest
 
 # Add user
 ARG USER
