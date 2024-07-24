@@ -27,6 +27,7 @@ RUN <<EOF
   mv ${CUDNN_ARCHIVE}/LICENSE /usr/local/cuda/LICENSE.cudnn
   rm -r ${CUDNN_ARCHIVE}
   rm ${CUDNN_ARCHIVE}.tar.xz
+  ldconfig
 EOF
 
 ENV PATH="$PATH:/usr/local/cuda-$CUDA_VERSION/bin"
