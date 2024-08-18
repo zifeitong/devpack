@@ -8,7 +8,7 @@ RUN [ "${TARGETARCH}" = "amd64" ]
 ARG CUDA_KEYRING=cuda-keyring_1.1-1_all.deb
 ARG CUDA_KEYRING_URL=https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/
 
-ARG CUDNN_ARCHIVE=cudnn-linux-x86_64-9.2.1.18_cuda12-archive
+ARG CUDNN_ARCHIVE=cudnn-linux-x86_64-9.3.0.75_cuda12-archive
 ARG CUDNN_URL=https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/
 
 RUN <<EOF
