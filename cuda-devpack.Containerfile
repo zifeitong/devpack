@@ -1,14 +1,11 @@
 FROM ghcr.io/zifeitong/ubuntu-devpack:latest
 
-ARG CUDA_VERSION=12.5
-
 ARG TARGETARCH
 RUN [ "${TARGETARCH}" = "amd64" ]
 
 ARG CUDA_KEYRING=cuda-keyring_1.1-1_all.deb
 ARG CUDA_KEYRING_URL=https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/
 
-ARG CUDNN_ARCHIVE=cudnn-linux-x86_64-9.3.0.75_cuda12-archive
 ARG CUDNN_URL=https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/
 
 RUN <<EOF
@@ -20,6 +17,7 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
+  CUDNN_ARCHIVE=`curl ${CUDNN_URL} | grep -o "cudnn-linux-x86_64-[^']*-archive" | tail -1`
   wget -nv --show-progress --progress=dot:mega ${CUDNN_URL}${CUDNN_ARCHIVE}.tar.xz
   tar -xf ${CUDNN_ARCHIVE}.tar.xz
   mv ${CUDNN_ARCHIVE}/include/* /usr/local/cuda/include
@@ -30,4 +28,4 @@ RUN <<EOF
   ldconfig
 EOF
 
-ENV PATH="$PATH:/usr/local/cuda-$CUDA_VERSION/bin"
+ENV PATH="$PATH:/usr/local/cuda/bin"
