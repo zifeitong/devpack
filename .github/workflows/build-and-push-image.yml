@@ -25,6 +25,13 @@ jobs:
       id-token: write
 
     steps:
+      - name: Delete old packages
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ matrix.image }}
+          package-type: "container"
+          min-versions-to-keep: 16
+
       - name: Checkout repository
         uses: actions/checkout@v4.1.6
 
@@ -62,10 +69,3 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.USER_NAME }}/${{ matrix.image }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
-
-      - name: Delete old packages
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: ${{ matrix.image }}
-          package-type: 'container'
-          min-versions-to-keep: 3
