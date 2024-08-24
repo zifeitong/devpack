@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+BASE="${BASE:-ghcr.io/zifeitong/ubuntu-devpack}"
+TAG="${1:-devpack}"
+
+podman pull $BASE
+podman build . --build-arg USER=$USER --build-arg UID=$(id -u) --build-arg BASE=$BASE -t $TAG
+
+VOLUME_NAME=$TAG-home
+if ! podman volume inspect "$VOLUME_NAME" >/dev/null 2>&1; then
+    podman volume create $VOLUME_NAME --label devpack
+fi

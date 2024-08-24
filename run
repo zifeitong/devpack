@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+IMAGE="${1:-devpack}"
+COMMAND="${2:-fish}"
+
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s >/dev/null 2>&1)"
+fi
+
+podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:$HOME -v $(pwd):/src -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND
