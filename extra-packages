@@ -13,6 +13,7 @@ libc++-dev
 libc++abi-dev
 llvm
 llvm-bolt
+lld
 
 # Java
 openjdk-11-jdk-headless
@@ -62,8 +63,9 @@ gh
 just
 tmux
 speedtest-cli
-ncdu
+gdu
 dnsutils
+bpftrace
 
 # duckdb
 # dog
