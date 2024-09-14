@@ -66,6 +66,7 @@ speedtest-cli
 gdu
 dnsutils
 bpftrace
+sd
 
 # duckdb
 # dog
@@ -73,3 +74,4 @@ bpftrace
 # clickhouse
 # starship
 # zellij
+# bandwhich
