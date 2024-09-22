@@ -1,3 +1,4 @@
+#===== Build Image =====
 FROM docker.io/library/ubuntu:24.04 AS builder
 
 # Install packages needed for building packages.
@@ -10,6 +11,8 @@ ARG TARGETARCH
 ARG BAZELISK_URL=https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-
 ARG BUILDIFIER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildifier-linux-
 ARG BUILDOZER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-
+
+ENV GOPATH=/go
 
 # Install bazel
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BAZELISK_URL}${TARGETARCH} > bazel
@@ -29,11 +32,12 @@ WORKDIR /perf_data_converter
 RUN /bazel build src:perf_to_profile -c opt
 
 # Install pprof
-WORKDIR /
-RUN git clone https://github.com/google/pprof.git --depth=1
-WORKDIR /pprof
-RUN go build
+RUN go install github.com/google/pprof@latest
 
+# Install doggo
+RUN go install github.com/mr-karan/doggo/cmd/doggo@latest
+
+# ===== Main Image =====
 FROM docker.io/library/ubuntu:24.04 as ubuntu-devpack
 LABEL name="ubuntu-debpack" version="24.04"
 
@@ -53,8 +57,9 @@ RUN rm /extra-packages
 
 RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
 
-COPY --from=builder --chmod=755 bazel buildifier buildozer /pprof/pprof \
+COPY --from=builder --chmod=755 bazel buildifier buildozer /go/bin/pprof \
      /perf_data_converter/bazel-bin/src/perf_to_profile \
+     /go/bin/doggo \
      /usr/local/bin/
 COPY --from=builder \
     /copybara/bazel-bin/java/com/google/copybara/copybara_deploy.jar \
