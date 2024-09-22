@@ -11,6 +11,7 @@ ARG TARGETARCH
 ARG BAZELISK_URL=https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-
 ARG BUILDIFIER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildifier-linux-
 ARG BUILDOZER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-
+ARG MAGIC_TRACE_URL=https://github.com/janestreet/magic-trace/releases/latest/download/magic-trace
 
 ENV GOPATH=/go
 
@@ -19,6 +20,9 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL ${BAZELISK_URL}${TARGETARCH} > bazel
 RUN chmod +x bazel
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDIFIER_URL}${TARGETARCH} > buildifier
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildozer
+
+# Install magic-trace
+RUN curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace
 
 # Install copybara
 RUN git clone https://github.com/google/copybara.git --depth=1
@@ -48,16 +52,19 @@ RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-lan
 RUN userdel --remove ubuntu
 
 # Install packages
+ARG DEBIAN_FRONTEND=noninteractive
+
 COPY extra-packages /
 RUN apt-get update && \
-    yes | /usr/local/sbin/unminimize && \
-    DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    ubuntu-minimal ubuntu-standard $(grep -v '^#' extra-packages | xargs)
+    apt-get install -y unminimize && \
+    yes | unminimize && \
+    apt-get -y install ubuntu-minimal ubuntu-standard $(grep -v '^#' extra-packages | xargs)
 RUN rm /extra-packages
 
 RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
 
-COPY --from=builder --chmod=755 bazel buildifier buildozer /go/bin/pprof \
+COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trace \
+     /go/bin/pprof \
      /perf_data_converter/bazel-bin/src/perf_to_profile \
      /go/bin/doggo \
      /usr/local/bin/
