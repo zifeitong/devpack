@@ -12,6 +12,7 @@ ARG BAZELISK_URL=https://github.com/bazelbuild/bazelisk/releases/latest/download
 ARG BUILDIFIER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildifier-linux-
 ARG BUILDOZER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-
 ARG MAGIC_TRACE_URL=https://github.com/janestreet/magic-trace/releases/latest/download/magic-trace
+ARG UV_URL=https://github.com/astral-sh/uv/releases/latest/download/uv
 
 ENV GOPATH=/go
 
@@ -21,19 +22,34 @@ RUN chmod +x bazel
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDIFIER_URL}${TARGETARCH} > buildifier
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildozer
 
+# Install uv
+RUN if [ "$TARGETARCH" = "amd64" ] ; then \
+  curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-x86_64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
+elif [ "$TARGETARCH" = "arm64" ] ; then \
+  curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
+fi
+
 # Install magic-trace
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace
 
 # Install copybara
+RUN useradd -m build -g root
+
 RUN git clone https://github.com/google/copybara.git --depth=1
+RUN chmod 775 copybara
+
+USER build
 WORKDIR /copybara
 RUN /bazel build //java/com/google/copybara:copybara_deploy.jar -c opt
+USER root
 
 # Install perf_data_converter
 WORKDIR /
 RUN git clone https://github.com/google/perf_data_converter.git --depth=1
 WORKDIR /perf_data_converter
 RUN /bazel build src:perf_to_profile -c opt
+
+USER root
 
 # Install pprof
 RUN go install github.com/google/pprof@latest
@@ -63,7 +79,7 @@ RUN rm /extra-packages
 
 RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
 
-COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trace \
+COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trace uv uvx \
      /go/bin/pprof \
      /perf_data_converter/bazel-bin/src/perf_to_profile \
      /go/bin/doggo \
