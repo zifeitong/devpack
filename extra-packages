@@ -17,7 +17,7 @@ lld
 mold
 
 # Java
-openjdk-11-jdk-headless
+openjdk-21-jdk-headless
 
 # Go
 golang
@@ -70,7 +70,6 @@ bpftrace
 sd
 
 # duckdb
-# uv
 # clickhouse
 # zellij
 # bandwhich
