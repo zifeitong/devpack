@@ -13,7 +13,7 @@ ARG BUILDIFIER_URL=https://github.com/bazelbuild/buildtools/releases/latest/down
 ARG BUILDOZER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-
 ARG MAGIC_TRACE_URL=https://github.com/janestreet/magic-trace/releases/latest/download/magic-trace
 ARG UV_URL=https://github.com/astral-sh/uv/releases/latest/download/uv
-ARG DUCKDB_URL=https://github.com/duckdb/duckdb/releases/latest/download/duckdb_cli-linux-
+ARG DUCKDB_URL=https://github.com/duckdb/duckdb/releases/latest/download/duckdb_cli-linux
 
 ENV GOPATH=/go
 
@@ -23,18 +23,19 @@ RUN chmod +x bazel
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDIFIER_URL}${TARGETARCH} > buildifier
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildozer
 
-# Install uv
 RUN if [ "$TARGETARCH" = "amd64" ] ; then \
+  # Install uv \
   curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-x86_64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
+  # Install magic-trace \
+  curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace ; \
+  # Install duckdb \
+  curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-amd64.zip | bsdtar -xvf- ; \
 elif [ "$TARGETARCH" = "arm64" ] ; then \
+  # Install uv \
   curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
+  # Install duckdb \
+  curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-aarch64.zip | bsdtar -xvf- ; \
 fi
-
-# Install magic-trace
-RUN curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace
-
-# Install duckdb
-RUN curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}${TARGETARCH}.zip | bsdtar -xvf-
 
 # Install copybara
 RUN useradd -m build -g root
@@ -77,11 +78,14 @@ RUN apt-get update && \
     apt-get install -y unminimize && \
     yes | unminimize && \
     apt-get -y install ubuntu-minimal ubuntu-standard $(grep -v '^#' extra-packages | xargs)
+RUN if [ "$TARGETARCH" = "amd64" ] ; then \
+    apt-get -y install $(grep -v '^#' extra-packages.amd64 | xargs) ; \
+fi
 RUN rm /extra-packages
 
 RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
 
-COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trace uv uvx duckdb \
+COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trac[e] uv uvx duckdb \
      /go/bin/pprof \
      /perf_data_converter/bazel-bin/src/perf_to_profile \
      /go/bin/doggo \
