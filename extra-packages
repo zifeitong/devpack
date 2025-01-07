@@ -68,7 +68,6 @@ dnsutils
 bpftrace
 sd
 
-# duckdb
 # clickhouse
 # zellij
 # bandwhich

@@ -45,7 +45,7 @@ RUN chmod 775 copybara
 
 USER build
 WORKDIR /copybara
-RUN /bazel build //java/com/google/copybara:copybara_deploy.jar -c opt --java_language_version=21 --tool_java_language_version=21 --java_runtime_version=remotejdk_21 --tool_java_runtime_version=remotejdk_21
+RUN /bazel build //java/com/google/copybara:copybara_deploy.jar -c opt
 USER root
 
 # Install perf_data_converter
