@@ -61,7 +61,7 @@ RUN go install github.com/google/pprof@latest
 RUN go install github.com/mr-karan/doggo/cmd/doggo@v1.0.5
 
 # ===== Main Image =====
-FROM docker.io/library/ubuntu:24.04 as ubuntu-devpack
+FROM docker.io/library/ubuntu:24.04 AS ubuntu-devpack
 LABEL name="ubuntu-debpack" version="24.04"
 
 # Remove apt configuration optimized for containers
