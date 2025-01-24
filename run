@@ -5,4 +5,6 @@ set -e
 IMAGE="${1:-devpack}"
 COMMAND="${2:-fish}"
 
-podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:$HOME -v $(pwd):/src -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND
+#podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:$HOME -v $(pwd):/src -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND
+#podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:$HOME -v $(pwd):/src -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND
+podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:/home/zifei -v $(pwd):/src -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND

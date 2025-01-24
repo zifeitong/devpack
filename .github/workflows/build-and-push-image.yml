@@ -37,13 +37,6 @@ jobs:
           platform=${{ matrix.platform }}
           echo "PLATFORM=${platform//\//-}" >> $GITHUB_ENV
 
-      - name: Delete old packages
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: ${{ env.IMAGE }}
-          package-type: "container"
-          min-versions-to-keep: 16
-
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
 
@@ -107,6 +100,13 @@ jobs:
       id-token: write
 
     steps:
+      - name: Delete old packages
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ env.IMAGE }}
+          package-type: "container"
+          min-versions-to-keep: 16
+
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
