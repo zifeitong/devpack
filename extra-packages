@@ -67,6 +67,7 @@ gdu
 dnsutils
 bpftrace
 sd
+libarchive-tools
 
 # clickhouse
 # zellij

@@ -4,7 +4,7 @@ FROM docker.io/library/ubuntu:24.04 AS builder
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    g++ openjdk-21-jdk-headless golang curl git libelf-dev libcap-dev libarchive-tools && \
+    build-essential openjdk-21-jdk-headless golang curl git libelf-dev libcap-dev libarchive-tools && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
@@ -52,7 +52,13 @@ USER root
 WORKDIR /
 RUN git clone https://github.com/google/perf_data_converter.git --depth=1
 WORKDIR /perf_data_converter
-RUN /bazel build src:perf_to_profile -c opt
+RUN /bazel build //src:perf_to_profile -c opt
+
+# Install grpc_cli
+WORKDIR /
+RUN git clone https://github.com/grpc/grpc.git --depth=1
+WORKDIR /grpc
+RUN CC=gcc /bazel build //test/cpp/util:grpc_cli -c opt
 
 # Install pprof
 RUN go install github.com/google/pprof@latest
@@ -87,6 +93,7 @@ RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
 
 COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trac[e] uv uvx duckdb \
      /go/bin/pprof \
+     /grpc/bazel-bin/test/cpp/util/grpc_cli \
      /perf_data_converter/bazel-bin/src/perf_to_profile \
      /go/bin/doggo \
      /usr/local/bin/
