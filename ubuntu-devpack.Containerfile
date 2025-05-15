@@ -4,7 +4,7 @@ FROM docker.io/library/ubuntu:24.04 AS builder
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    build-essential openjdk-21-jdk-headless golang curl git libelf-dev libcap-dev libarchive-tools && \
+    build-essential golang curl git libelf-dev libcap-dev libarchive-tools && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
@@ -14,6 +14,8 @@ ARG BUILDOZER_URL=https://github.com/bazelbuild/buildtools/releases/latest/downl
 ARG MAGIC_TRACE_URL=https://github.com/janestreet/magic-trace/releases/latest/download/magic-trace
 ARG UV_URL=https://github.com/astral-sh/uv/releases/latest/download/uv
 ARG DUCKDB_URL=https://github.com/duckdb/duckdb/releases/latest/download/duckdb_cli-linux
+ARG COPYBARA_URL=https://github.com/google/copybara/releases/latest/download/copybara_deploy.jar
+ARG JJ_URL=https://github.com/jj-vcs/jj/releases/latest/download
 
 ENV GOPATH=/go
 
@@ -30,23 +32,19 @@ RUN if [ "$TARGETARCH" = "amd64" ] ; then \
   curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace ; \
   # Install duckdb \
   curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-amd64.zip | bsdtar -xvf- ; \
+  # Install jj \
+  curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-x86_64-unknown-linux-musl.tar.gz  | tar xvz ; \
 elif [ "$TARGETARCH" = "arm64" ] ; then \
   # Install uv \
   curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
   # Install duckdb \
   curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-aarch64.zip | bsdtar -xvf- ; \
+  # Install jj \
+  curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-aarch64-unknown-linux-musl.tar.gz  | tar xvz ; \
 fi
 
 # Install copybara
-RUN useradd -m build -g root
-
-RUN git clone https://github.com/google/copybara.git --depth=1
-RUN chmod 775 copybara
-
-USER build
-WORKDIR /copybara
-RUN /bazel build //java/com/google/copybara:copybara_deploy.jar -c opt
-USER root
+RUN curl --proto '=https' --tlsv1.3 -sSfL ${COPYBARA_URL} > copybara_deploy.jar
 
 # Install perf_data_converter
 WORKDIR /
@@ -97,9 +95,7 @@ COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trac[e] uv uvx 
      /perf_data_converter/bazel-bin/src/perf_to_profile \
      /go/bin/doggo \
      /usr/local/bin/
-COPY --from=builder \
-    /copybara/bazel-bin/java/com/google/copybara/copybara_deploy.jar \
-    /opt/copybara/
+COPY --from=builder /copybara_deploy.jar /opt/copybara/
 COPY --chmod=755 <<"EOF" /usr/local/bin/copybara
 #!/usr/bin/env bash
 exec java -jar /opt/copybara/copybara_deploy.jar "$@"
