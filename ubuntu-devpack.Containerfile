@@ -38,7 +38,7 @@ elif [ "$TARGETARCH" = "arm64" ] ; then \
   # Install uv \
   curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
   # Install duckdb \
-  curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-aarch64.zip | bsdtar -xvf- ; \
+  curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-arm64.zip | bsdtar -xvf- ; \
   # Install jj \
   curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-aarch64-unknown-linux-musl.tar.gz  | tar xvz ; \
 fi
