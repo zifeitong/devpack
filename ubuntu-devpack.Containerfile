@@ -26,7 +26,7 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDIFIER_URL}${TARGETARCH} > build
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildozer
 
 # Install duckdb \
-curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-${TARGETARCH}.zip | bsdtar -xvf- ; \
+RUN curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-${TARGETARCH}.zip | bsdtar -xvf-
 
 RUN if [ "$TARGETARCH" = "amd64" ] ; then \
   # Install uv \
