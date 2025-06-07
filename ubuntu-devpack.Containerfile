@@ -25,20 +25,19 @@ RUN chmod +x bazel
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDIFIER_URL}${TARGETARCH} > buildifier
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildozer
 
+# Install duckdb \
+curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-${TARGETARCH}.zip | bsdtar -xvf- ; \
+
 RUN if [ "$TARGETARCH" = "amd64" ] ; then \
   # Install uv \
   curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-x86_64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
   # Install magic-trace \
   curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace ; \
-  # Install duckdb \
-  curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-amd64.zip | bsdtar -xvf- ; \
   # Install jj \
   curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-x86_64-unknown-linux-musl.tar.gz  | tar xvz ; \
 elif [ "$TARGETARCH" = "arm64" ] ; then \
   # Install uv \
   curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
-  # Install duckdb \
-  curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-arm64.zip | bsdtar -xvf- ; \
   # Install jj \
   curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-aarch64-unknown-linux-musl.tar.gz  | tar xvz ; \
 fi
