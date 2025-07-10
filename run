@@ -5,6 +5,8 @@ set -e
 IMAGE="${1:-devpack}"
 COMMAND="${2:-fish}"
 
-#podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:$HOME -v $(pwd):/src -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND
-#podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:$HOME -v $(pwd):/src -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND
-podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:/home/zifei -v $(pwd):/src -w /src --rm --userns keep-id --privileged $IMAGE $COMMAND
+if [ "$(uname)" == "Darwin" ]; then
+    container run -c 8 -m 24g --rm --interactive --tty --user=$USER --name $IMAGE -v $HOME/devpack-home:/home/$USER -v $(pwd):/src -w /src $IMAGE $COMMAND
+else
+    podman run --rm --interactive --tty --user=$USER --hostname $IMAGE -v $IMAGE-home:$HOME -v $(pwd):/src -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK -w /src --userns keep-id --privileged $IMAGE $COMMAND
+fi
