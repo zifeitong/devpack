@@ -2,6 +2,8 @@
 build-essential
 cmake
 gdb
+flex
+bison
 
 # clang
 clang
