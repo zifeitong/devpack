@@ -4,7 +4,7 @@ FROM docker.io/library/ubuntu:24.04 AS builder
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    build-essential golang curl git libelf-dev libcap-dev libarchive-tools && \
+    build-essential golang curl git libelf-dev libcap-dev libarchive-tools lld && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
@@ -55,7 +55,7 @@ RUN /bazel build //src:perf_to_profile -c opt
 WORKDIR /
 RUN git clone https://github.com/grpc/grpc.git --depth=1
 WORKDIR /grpc
-RUN CC=gcc /bazel build //test/cpp/util:grpc_cli -c opt
+RUN CC=gcc /bazel build //test/cpp/util:grpc_cli -c opt --linkopt="-fuse-ld=lld"
 
 # Install pprof
 RUN go install github.com/google/pprof@latest
