@@ -70,6 +70,7 @@ dnsutils
 bpftrace
 sd
 libarchive-tools
+zstd
 
 # clickhouse
 # zellij
