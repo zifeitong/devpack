@@ -16,6 +16,7 @@ ARG UV_URL=https://github.com/astral-sh/uv/releases/latest/download/uv
 ARG DUCKDB_URL=https://github.com/duckdb/duckdb/releases/latest/download/duckdb_cli-linux
 ARG COPYBARA_URL=https://github.com/google/copybara/releases/latest/download/copybara_deploy.jar
 ARG JJ_URL=https://github.com/jj-vcs/jj/releases/latest/download
+ARG ZED_URL=https://zed.dev/api/releases/stable/latest/zed-linux
 
 ENV GOPATH=/go
 
@@ -35,11 +36,15 @@ RUN if [ "$TARGETARCH" = "amd64" ] ; then \
   curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace ; \
   # Install jj \
   curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-x86_64-unknown-linux-musl.tar.gz  | tar xvz ; \
+  # Install zed \
+  curl --proto '=https' --tlsv1.3 -sSfL ${ZED_URL}-x86_64.tar.gz | tar xvz ; \
 elif [ "$TARGETARCH" = "arm64" ] ; then \
   # Install uv \
   curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
   # Install jj \
   curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-aarch64-unknown-linux-musl.tar.gz  | tar xvz ; \
+  # Install zed \
+  curl --proto '=https' --tlsv1.3 -sSfL ${ZED_URL}-aarch64.tar.gz | tar xvz ; \
 fi
 
 # Install copybara
@@ -99,6 +104,9 @@ COPY --chmod=755 <<"EOF" /usr/local/bin/copybara
 #!/usr/bin/env bash
 exec java -jar /opt/copybara/copybara_deploy.jar "$@"
 EOF
+
+COPY --from=builder /zed.app /opt/zed.app
+RUN ln -s /opt/zed.app/bin/zed /usr/local/bin/zed
 
 # Disable APT ESM hook.
 RUN rm /etc/apt/apt.conf.d/20apt-esm-hook.conf

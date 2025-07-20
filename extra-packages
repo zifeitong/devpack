@@ -71,7 +71,10 @@ bpftrace
 sd
 libarchive-tools
 zstd
-
 # clickhouse
 # zellij
 # bandwhich
+
+# Wayland
+libwayland-client0
+mesa-vulkan-drivers
