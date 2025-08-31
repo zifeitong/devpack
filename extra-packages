@@ -4,6 +4,7 @@ cmake
 gdb
 flex
 bison
+ninja-build
 
 # clang
 clang
