@@ -4,7 +4,7 @@ FROM docker.io/library/ubuntu:24.04 AS builder
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    build-essential golang curl git libelf-dev libcap-dev libarchive-tools lld && \
+    build-essential golang curl git libelf-dev libcap-dev libarchive-tools lld python3 && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
@@ -30,22 +30,22 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildo
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-${TARGETARCH}.zip | bsdtar -xvf-
 
 RUN if [ "$TARGETARCH" = "amd64" ] ; then \
-  # Install uv \
-  curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-x86_64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
-  # Install magic-trace \
-  curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace ; \
-  # Install jj \
-  curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-x86_64-unknown-linux-musl.tar.gz  | tar xvz ; \
-  # Install zed \
-  curl --proto '=https' --tlsv1.3 -sSfL ${ZED_URL}-x86_64.tar.gz | tar xvz ; \
-elif [ "$TARGETARCH" = "arm64" ] ; then \
-  # Install uv \
-  curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
-  # Install jj \
-  curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-aarch64-unknown-linux-musl.tar.gz  | tar xvz ; \
-  # Install zed \
-  curl --proto '=https' --tlsv1.3 -sSfL ${ZED_URL}-aarch64.tar.gz | tar xvz ; \
-fi
+    # Install uv \
+    curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-x86_64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
+    # Install magic-trace \
+    curl --proto '=https' --tlsv1.3 -sSfL ${MAGIC_TRACE_URL} > magic-trace ; \
+    # Install jj \
+    curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-x86_64-unknown-linux-musl.tar.gz  | tar xvz ; \
+    # Install zed \
+    curl --proto '=https' --tlsv1.3 -sSfL ${ZED_URL}-x86_64.tar.gz | tar xvz ; \
+    elif [ "$TARGETARCH" = "arm64" ] ; then \
+    # Install uv \
+    curl --proto '=https' --tlsv1.3 -sSfL ${UV_URL}-aarch64-unknown-linux-gnu.tar.gz | tar xvz --strip-components=1 ; \
+    # Install jj \
+    curl --proto '=https' --tlsv1.3 -sSfL ${JJ_URL}/jj-$(curl -w "%{url_effective}" -I -L -s $JJ_URL -o /dev/null | sed 's:.*/::')-aarch64-unknown-linux-musl.tar.gz  | tar xvz ; \
+    # Install zed \
+    curl --proto '=https' --tlsv1.3 -sSfL ${ZED_URL}-aarch64.tar.gz | tar xvz ; \
+    fi
 
 # Install copybara
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${COPYBARA_URL} > copybara_deploy.jar
@@ -88,17 +88,17 @@ RUN apt-get update && \
     apt-get -y install ubuntu-minimal ubuntu-standard $(grep -v '^#' extra-packages | xargs)
 RUN if [ "$TARGETARCH" = "amd64" ] ; then \
     apt-get -y install $(grep -v '^#' extra-packages.amd64 | xargs) ; \
-fi
+    fi
 RUN rm /extra-packages
 
 RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
 
 COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trac[e] uv uvx duckdb \
-     /go/bin/pprof \
-     /grpc/bazel-bin/test/cpp/util/grpc_cli \
-     /perf_data_converter/bazel-bin/src/perf_to_profile \
-     /go/bin/doggo \
-     /usr/local/bin/
+    /go/bin/pprof \
+    /grpc/bazel-bin/test/cpp/util/grpc_cli \
+    /perf_data_converter/bazel-bin/src/perf_to_profile \
+    /go/bin/doggo \
+    /usr/local/bin/
 COPY --from=builder /copybara_deploy.jar /opt/copybara/
 COPY --chmod=755 <<"EOF" /usr/local/bin/copybara
 #!/usr/bin/env bash
