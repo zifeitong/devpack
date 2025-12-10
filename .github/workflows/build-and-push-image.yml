@@ -149,6 +149,9 @@ jobs:
       id-token: write
 
     steps:
+      - name: Free up disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android
+    
       - name: Delete old packages
         uses: actions/delete-package-versions@v5
         with:
