@@ -7,7 +7,7 @@ ARG UID
 RUN useradd --password "" --groups sudo --no-create-home --uid ${UID} ${USER}
 
 # Copy config files
-ADD --chown=${USER}:${USER} config /config/
+COPY --chown=${USER}:${USER} config /config/
 
 COPY <<"EOF" /etc/bash.bashrc
 . "${XDG_CONFIG_HOME}/bash/bashrc"

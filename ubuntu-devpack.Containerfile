@@ -66,7 +66,7 @@ RUN CC=gcc /bazel build //test/cpp/util:grpc_cli -c opt --linkopt="-fuse-ld=lld"
 RUN go install github.com/google/pprof@latest
 
 # Install doggo
-RUN go install github.com/mr-karan/doggo/cmd/doggo@v1.0.5
+RUN go install github.com/mr-karan/doggo/cmd/doggo@v1.1.4
 
 # ===== Main Image =====
 FROM docker.io/library/ubuntu:24.04 AS ubuntu-devpack
