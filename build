@@ -6,8 +6,8 @@ BASE="${BASE:-ghcr.io/zifeitong/ubuntu-devpack}"
 TAG="${1:-devpack}"
 
 if [ "$(uname)" == "Darwin" ]; then
-    container build . --build-arg USER=$USER --build-arg UID=$(id -u) --build-arg BASE=$BASE -t $TAG -f Containerfile
+	container build . --build-arg USER=$USER --build-arg UID=$(id -u) --build-arg BASE=$BASE --build-arg GIT_AUTHOR_NAME="$(git config user.name)" --build-arg GIT_AUTHOR_EMAIL="$(git config user.email)" -t $TAG -f Containerfile
     mkdir -p $HOME/devpack-home
 else
-    podman build . --build-arg USER=$USER --build-arg UID=$(id -u) --build-arg BASE=$BASE -t $TAG --pull=newer
+    podman build . --build-arg USER=$USER --build-arg UID=$(id -u) --build-arg BASE=$BASE --build-arg GIT_AUTHOR_NAME="$(git config user.name)" --build-arg GIT_AUTHOR_EMAIL="$(git config user.email)" -t $TAG --pull=newer
 fi

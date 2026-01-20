@@ -1,0 +1,4 @@
+[init]
+	DefaultBranch = main
+[core]
+	editor = vim
