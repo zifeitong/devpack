@@ -54,7 +54,7 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL ${COPYBARA_URL} > copybara_deploy.jar
 WORKDIR /
 RUN git clone https://github.com/google/perf_data_converter.git --depth=1
 WORKDIR /perf_data_converter
-RUN /bazel build //src:perf_to_profile -c opt
+RUN USE_BAZEL_VERSION=8.5.1 /bazel build //src:perf_to_profile -c opt
 
 # Install grpc_cli
 WORKDIR /
