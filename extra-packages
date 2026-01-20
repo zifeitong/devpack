@@ -79,3 +79,4 @@ zstd
 # Wayland
 libwayland-client0
 mesa-vulkan-drivers
+fonts-jetbrains-mono
