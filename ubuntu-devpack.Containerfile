@@ -93,7 +93,7 @@ RUN rm /extra-packages
 
 RUN ln -s "$(find /usr/lib/linux-tools/*/perf | head -1)" /usr/local/bin/perf
 
-COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trac[e] uv uvx duckdb \
+COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trac[e] uv uvx duckdb jj \
     /go/bin/pprof \
     /grpc/bazel-bin/test/cpp/util/grpc_cli \
     /perf_data_converter/bazel-bin/src/perf_to_profile \
