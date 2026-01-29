@@ -24,8 +24,8 @@ EOF
 
 RUN cat << EOF >> /config/jj/config.toml
 [user]
-    name = ${GIT_AUTHOR_NAME}
-    email = ${GIT_AUTHOR_EMAIL}
+    name = "${GIT_AUTHOR_NAME}"
+    email = "${GIT_AUTHOR_EMAIL}"
 EOF
 
 # Setup locale and timezone
