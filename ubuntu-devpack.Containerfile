@@ -54,7 +54,7 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL ${COPYBARA_URL} > copybara_deploy.jar
 WORKDIR /
 RUN git clone https://github.com/google/perf_data_converter.git --depth=1
 WORKDIR /perf_data_converter
-RUN USE_BAZEL_VERSION=8.5.1 /bazel build //src:perf_to_profile -c opt
+RUN /bazel build //src:perf_to_profile -c opt
 
 # Install grpc_cli
 WORKDIR /
@@ -67,6 +67,12 @@ RUN go install github.com/google/pprof@latest
 
 # Install doggo
 RUN go install github.com/mr-karan/doggo/cmd/doggo@v1.1.4
+
+# Install bzl_execlog_to_compile_commands_json
+WORKDIR /
+RUN git clone https://github.com/zifeitong/g5.git --depth=1
+WORKDIR /g5
+RUN /bazel build //tools:bzl_execlog_to_compile_commands_json -c opt
 
 # ===== Main Image =====
 FROM docker.io/library/ubuntu:24.04 AS ubuntu-devpack
@@ -98,6 +104,7 @@ COPY --from=builder --chmod=755 bazel buildifier buildozer magic-trac[e] uv uvx 
     /grpc/bazel-bin/test/cpp/util/grpc_cli \
     /perf_data_converter/bazel-bin/src/perf_to_profile \
     /go/bin/doggo \
+    /g5/bazel-bin/tools/bzl_execlog_to_compile_commands_json \
     /usr/local/bin/
 COPY --from=builder /copybara_deploy.jar /opt/copybara/
 COPY --chmod=755 <<"EOF" /usr/local/bin/copybara
