@@ -1,5 +1,5 @@
 #===== Build Image =====
-FROM docker.io/library/ubuntu:24.04 AS builder
+FROM docker.io/library/ubuntu:26.04 AS builder
 
 # Install packages needed for building packages.
 RUN apt-get update && \
@@ -75,8 +75,8 @@ WORKDIR /g5
 RUN /bazel build --config=llvm_toolchain //tools:bzl_execlog_to_compile_commands_json -c opt
 
 # ===== Main Image =====
-FROM docker.io/library/ubuntu:24.04 AS ubuntu-devpack
-LABEL name="ubuntu-debpack" version="24.04"
+FROM docker.io/library/ubuntu:26.04 AS ubuntu-devpack
+LABEL name="ubuntu-debpack" version="26.04"
 
 # Remove apt configuration optimized for containers
 RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-languages
