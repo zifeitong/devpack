@@ -4,7 +4,7 @@ FROM docker.io/library/ubuntu:26.04 AS builder
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    build-essential golang curl git libelf-dev libcap-dev libarchive-tools lld python3 && \
+    build-essential golang curl git libelf-dev libcap-dev libarchive-tools lld python3 libxml2-dev && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
