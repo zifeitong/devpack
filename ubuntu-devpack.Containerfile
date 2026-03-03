@@ -72,7 +72,7 @@ RUN go install github.com/mr-karan/doggo/cmd/doggo@v1.1.4
 WORKDIR /
 RUN git clone https://github.com/zifeitong/g5.git --depth=1
 WORKDIR /g5
-RUN /bazel build --config=llvm_toolchain //tools:bzl_execlog_to_compile_commands_json -c opt
+RUN /bazel build //tools:bzl_execlog_to_compile_commands_json -c opt
 
 # ===== Main Image =====
 FROM docker.io/library/ubuntu:26.04 AS ubuntu-devpack
