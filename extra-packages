@@ -55,7 +55,7 @@ btop
 fd-find
 ripgrep
 fzf
-linux-tools-generic
+linux-perf
 mtr-tiny
 time
 strace
