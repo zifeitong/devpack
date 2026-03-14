@@ -13,7 +13,7 @@ if [ "$(uname)" == "Darwin" ]; then
 	    --name $IMAGE \
 	    -c $NCPU \
 	    -m $MEMSIZE \
-	    -v $IMAGE-home:/home/$USER\
+            -v $HOME/devpack-home:/home/$USER \
 	    -v $(pwd):/src \
 	    -e XDG_CONFIG_HOME=/config \
 	    --ssh \
