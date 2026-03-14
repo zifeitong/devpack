@@ -9,33 +9,33 @@ if [ "$(uname)" == "Darwin" ]; then
     NCPU="$(sysctl -n hw.ncpu)"
     MEMSIZE="$(sysctl -n hw.memsize)"
     container run --rm --interactive --tty \
-	    --user=$USER \
-	    --name $IMAGE \
-	    -c $NCPU \
-	    -m $MEMSIZE \
-            -v $HOME/devpack-home:/home/$USER \
-	    -v $(pwd):/src \
-	    -e XDG_CONFIG_HOME=/config \
-	    --ssh \
-	    -w /src \
-	    $IMAGE \
-	    $COMMAND
+        --user=$USER \
+        --name $IMAGE \
+        -c $NCPU \
+        -m $MEMSIZE \
+        -v $IMAGE-home:/home/$USER \
+        -v $(pwd):/src \
+        -e XDG_CONFIG_HOME=/config \
+        --ssh \
+        -w /src \
+        $IMAGE \
+        $COMMAND
 else
     podman run --rm --interactive --tty \
-	    --user=$USER \
-	    --hostname $IMAGE \
-	    -v $IMAGE-home:$HOME \
-	    -v $(pwd):/src \
-	    -e XDG_CONFIG_HOME=/config \
-	    -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK \
-	    -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
-	    -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY \
-	    -e WAYLAND_DISPLAY=$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY \
-	    -v $XDG_RUNTIME_DIR/bus:$XDG_RUNTIME_DIR/bus \
-	    -e DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS \
-	    -w /src \
-	    --userns keep-id \
-	    --privileged \
-	    $IMAGE \
-	    $COMMAND
+        --user=$USER \
+        --hostname $IMAGE \
+        -v $IMAGE-home:$HOME \
+        -v $(pwd):/src \
+        -e XDG_CONFIG_HOME=/config \
+        -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK \
+        -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+        -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY \
+        -e WAYLAND_DISPLAY=$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY \
+        -v $XDG_RUNTIME_DIR/bus:$XDG_RUNTIME_DIR/bus \
+        -e DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS \
+        -w /src \
+        --userns keep-id \
+        --privileged \
+        $IMAGE \
+        $COMMAND
 fi
