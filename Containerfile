@@ -4,7 +4,11 @@ FROM ${BASE}:latest
 # Add user
 ARG USER
 ARG UID
-RUN useradd --password "" --groups sudo --no-create-home --uid ${UID} ${USER}
+RUN useradd --no-create-home --uid ${UID} ${USER}
+RUN echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /tmp/01-add-sudo-user && \
+    visudo -c -f /tmp/01-add-sudo-user && \
+    chmod 600 /tmp/01-add-sudo-user && \
+    mv /tmp/01-add-sudo-user /etc/sudoers.d
 
 # Copy config files
 COPY --chown=${USER}:${USER} config /config/
