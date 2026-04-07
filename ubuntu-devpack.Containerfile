@@ -57,10 +57,10 @@ WORKDIR /perf_data_converter
 RUN /bazel build //src:perf_to_profile -c opt
 
 # Install grpc_cli
-WORKDIR /
-RUN git clone https://github.com/grpc/grpc.git --depth=1
-WORKDIR /grpc
-RUN CC=clang /bazel build //test/cpp/util:grpc_cli -c opt --linkopt="-fuse-ld=lld"
+#WORKDIR /
+#RUN git clone https://github.com/grpc/grpc.git --depth=1
+#WORKDIR /grpc
+#RUN CC=clang /bazel build //test/cpp/util:grpc_cli -c opt --linkopt="-fuse-ld=lld"
 
 # Install pprof
 RUN go install github.com/google/pprof@latest
