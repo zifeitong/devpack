@@ -4,7 +4,7 @@ FROM docker.io/library/ubuntu:26.04 AS builder
 # Install packages needed for building packages.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    build-essential golang curl git libelf-dev libcap-dev libarchive-tools lld python3 libxml2-dev && \
+    build-essential clang golang curl git libelf-dev libcap-dev libarchive-tools lld python3 libxml2-dev && \
     rm -rd /var/lib/apt/lists/*
 
 ARG TARGETARCH
@@ -57,10 +57,10 @@ WORKDIR /perf_data_converter
 RUN /bazel build //src:perf_to_profile -c opt
 
 # Install grpc_cli
-#WORKDIR /
-#RUN git clone https://github.com/grpc/grpc.git --depth=1
-#WORKDIR /grpc
-#RUN CC=clang /bazel build //test/cpp/util:grpc_cli -c opt --linkopt="-fuse-ld=lld"
+WORKDIR /
+RUN git clone https://github.com/grpc/grpc.git --depth=1
+WORKDIR /grpc
+RUN /bazel build //test/cpp/util:grpc_cli -c opt --linkopt="-fuse-ld=lld" --copt="-Wno-incompatible-pointer-types-discards-qualifiers"
 
 # Install pprof
 RUN go install github.com/google/pprof@latest
