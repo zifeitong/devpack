@@ -6,7 +6,7 @@ RUN [ "${TARGETARCH}" = "amd64" ]
 ARG CUDNN_URL=https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/
 
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y cuda-tooklit
+    DEBIAN_FRONTEND=noninteractive apt-get install -y cuda-toolkit
 
 RUN <<EOF
   CUDNN_ARCHIVE=`curl ${CUDNN_URL} | grep -o "cudnn-linux-x86_64-[^']*-archive" | tail -1`
