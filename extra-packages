@@ -17,7 +17,6 @@ libc++abi-dev
 llvm
 lld
 mold
-libxml2-dev
 
 # Java
 openjdk-21-jdk-headless
@@ -73,6 +72,7 @@ bpftrace
 sd
 libarchive-tools
 zstd
+tokei
 # clickhouse
 # zellij
 # bandwhich
