@@ -12,6 +12,8 @@ if [ "$(uname)" == "Darwin" ]; then
         --build-arg BASE=$BASE \
         --build-arg GIT_AUTHOR_NAME="$(git config user.name)" \
         --build-arg GIT_AUTHOR_EMAIL="$(git config user.email)" \
+        --arch x86_64 --arch arm64 \
+        --pull \
         -t $TAG \
         -f Containerfile
 
