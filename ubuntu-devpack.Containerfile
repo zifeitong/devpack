@@ -13,7 +13,7 @@ ARG BUILDIFIER_URL=https://github.com/bazelbuild/buildtools/releases/latest/down
 ARG BUILDOZER_URL=https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-
 ARG MAGIC_TRACE_URL=https://github.com/janestreet/magic-trace/releases/latest/download/magic-trace
 ARG UV_URL=https://github.com/astral-sh/uv/releases/latest/download/uv
-ARG DUCKDB_URL=https://github.com/duckdb/duckdb/releases/latest/download/duckdb_cli-linux
+ARG DUCKDB_URL=https://github.com/duckdb/duckdb/releases/latest/download/duckdb-cli-linux
 ARG COPYBARA_URL=https://github.com/google/copybara/releases/latest/download/copybara_deploy.jar
 ARG JJ_URL=https://github.com/jj-vcs/jj/releases/latest/download
 ARG ZED_URL=https://zed.dev/api/releases/stable/latest/zed-linux
@@ -27,7 +27,7 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDIFIER_URL}${TARGETARCH} > build
 RUN curl --proto '=https' --tlsv1.3 -sSfL ${BUILDOZER_URL}${TARGETARCH} > buildozer
 
 # Install duckdb \
-RUN curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-${TARGETARCH}.zip | bsdtar -xvf-
+RUN curl --proto '=https' --tlsv1.3 -sSfL ${DUCKDB_URL}-${TARGETARCH}.tar.gz | tar xvz --strip-components=1
 
 RUN if [ "$TARGETARCH" = "amd64" ] ; then \
     # Install uv \
