@@ -4,16 +4,23 @@ set -e
 
 IMAGE="${1:-devpack}"
 COMMAND="${2:-fish}"
+ARCH="${ARCH:-$(uname -m)}"
+
+case "$ARCH" in
+    amd64) ARCH=x86_64 ;;
+    aarch64) ARCH=arm64 ;;
+esac
 
 if [ "$(uname)" == "Darwin" ]; then
     NCPU="$(sysctl -n hw.ncpu)"
     MEMSIZE="$(sysctl -n hw.memsize)"
     container run --rm --interactive --tty \
         --user=$USER \
-        --name $IMAGE \
+        --name $IMAGE-$ARCH \
+        --arch $ARCH \
         -c $NCPU \
         -m $MEMSIZE \
-        -v $IMAGE-home:/home/$USER \
+        -v $IMAGE-home-$ARCH:/home/$USER \
         -v $(pwd):/src \
         -e XDG_CONFIG_HOME=/config \
         --ssh \

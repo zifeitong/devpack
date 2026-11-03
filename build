@@ -17,11 +17,13 @@ if [ "$(uname)" == "Darwin" ]; then
         -t $TAG \
         -f Containerfile
 
-    container run --rm \
-        --name $TAG \
-        -v $TAG-home:/home/$USER \
-        $TAG \
-        chown $USER:$USER /home/$USER
+    for ARCH in x86_64 arm64; do
+        container run --rm \
+            --arch $ARCH \
+            -v $TAG-home-$ARCH:/home/$USER \
+            $TAG \
+            chown $USER:$USER /home/$USER
+    done
 else
     podman build . \
         --build-arg USER=$USER \
